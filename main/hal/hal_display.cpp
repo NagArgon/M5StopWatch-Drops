@@ -355,8 +355,16 @@ void Hal::lvgl_init()
     lv_display_set_driver_data(disp, _display.get());
     lv_display_set_flush_cb(disp, lvgl_flush_cb);
 
-    static uint8_t *buf1 = (uint8_t *)heap_caps_malloc(_display->width() * LV_BUFFER_LINE, MALLOC_CAP_SPIRAM);
-    static uint8_t *buf2 = (uint8_t *)heap_caps_malloc(_display->width() * LV_BUFFER_LINE, MALLOC_CAP_SPIRAM);
+    // 描画バッファは内部RAM優先 (PSRAMよりソフトウェア描画が大幅に速い)。確保できなければPSRAMへ
+    const size_t buf_size = _display->width() * LV_BUFFER_LINE;
+    static uint8_t *buf1  = (uint8_t *)heap_caps_malloc(buf_size, MALLOC_CAP_INTERNAL | MALLOC_CAP_DMA);
+    static uint8_t *buf2  = (uint8_t *)heap_caps_malloc(buf_size, MALLOC_CAP_INTERNAL | MALLOC_CAP_DMA);
+    if (buf1 == NULL) {
+        buf1 = (uint8_t *)heap_caps_malloc(buf_size, MALLOC_CAP_SPIRAM);
+    }
+    if (buf2 == NULL) {
+        buf2 = (uint8_t *)heap_caps_malloc(buf_size, MALLOC_CAP_SPIRAM);
+    }
     lv_display_set_buffers(disp, (void *)buf1, (void *)buf2, _display->width() * LV_BUFFER_LINE,
                            LV_DISPLAY_RENDER_MODE_PARTIAL);
 
