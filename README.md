@@ -31,7 +31,7 @@ Built first to verify the IMU axis mapping; kept as a bonus app.
 
 ## Demo
 
-https://x.com/JANK_Hurrymoon/status/2083552314967965839
+https://x.com/JANK_Hurrymoon/status/2085164394531668334
 
 ## Hardware
 
